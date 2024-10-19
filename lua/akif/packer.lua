@@ -37,7 +37,6 @@ return require('packer').startup(function(use)
             { 'neovim/nvim-lspconfig' },
             { 'hrsh7th/nvim-cmp' },
             { 'hrsh7th/cmp-nvim-lsp' },
-            { 'hrsh7th/cmp-nvim-lsp-signature-help' },
             { 'L3MON4D3/LuaSnip' },
             { 'hrsh7th/cmp-buffer' },
             { 'saadparwaiz1/cmp_luasnip' },
@@ -53,4 +52,18 @@ return require('packer').startup(function(use)
         requires = { "rafamadriz/friendly-snippets" },
 
     })
+
+    use {
+        'rmagatti/auto-session',
+        config = function()
+            require("auto-session").setup {
+                suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/" },
+            }
+        end
+    }
+
+    use {
+        'nvim-lualine/lualine.nvim',
+        requires = { 'nvim-tree/nvim-web-devicons', opt = true }
+    }
 end)

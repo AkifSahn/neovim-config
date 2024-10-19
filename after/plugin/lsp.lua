@@ -35,9 +35,9 @@ lsp_zero.format_on_save({
     },
     servers = {
         ['ts_ls'] = { 'javascript', 'typescript' },
-        ['pyright'] = { 'python' },
+        ['jedi_language_server'] = { 'python' },
         ['gopls'] = { 'go' },
-        ['lua_ls'] = { 'lua' },
+        -- ['lua_ls'] = { 'lua' },
         ["rust_analyzer"] = { 'rust' },
         -- ["clangd"] = { 'c', 'cpp' },
     }
@@ -50,10 +50,12 @@ require('mason').setup({})
 require('mason-lspconfig').setup({
     -- Replace the language servers listed here
     -- with the ones you want to install
-    ensure_installed = { "gopls", "eslint", "ts_ls", "lua_ls", "pyright", "rust_analyzer", "clangd", "bashls" },
+    ensure_installed = { "gopls", "eslint", "ts_ls", "lua_ls", "jedi_language_server", "rust_analyzer", "clangd", "bashls" },
     handlers = {
         function(server_name)
             require('lspconfig')[server_name].setup({})
         end,
-    }
-})
+
+    },
+}
+)
