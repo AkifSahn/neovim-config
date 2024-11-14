@@ -1,6 +1,9 @@
 vim.g.mapleader = " "
 
 vim.keymap.set("n", "<leader>ex", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>te", function()
+    vim.cmd(":Texplore")
+end)
 
 -- alternate file
 vim.keymap.set("n", "^", "<C-^>")
