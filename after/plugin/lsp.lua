@@ -56,6 +56,17 @@ require('mason-lspconfig').setup({
             require('lspconfig')[server_name].setup({})
         end,
 
+        clangd = function ()
+            require('lspconfig').clangd.setup({
+                cmd = {"clangd", "--background-index", "--clang-tidy", "--completion-style=detailed"},-- "--header-insertion=never"},
+                filetypes = {"c", "cpp"},
+                capabilities = require('cmp_nvim_lsp').default_capabilities(),
+                on_attach = function (client, bufnr)
+                    local opts = { buffer = bufnr, remap = false }
+                    vim.keymap.set("n", "<leader>hs", function() vim.lsp.buf.document_highlight() end, opts)
+                end
+            })
+        end,
     },
 }
 )
