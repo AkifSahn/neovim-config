@@ -1,17 +1,5 @@
 vim.keymap.set('n', '<leader>wr', '<cmd>SessionSearch<CR>')
 vim.keymap.set('n', '<leader>ws', '<cmd>SessionSave<CR>')
-vim.keymap.set('n', '<leader>ww', function()
-    local api = require("auto-session.lib")
-    print(api.session_exists_for_cwd())
-    -- local session = require("auto-session.lib").current_session_name(false)
-    -- if session == '' then
-    --     vim.cmd('SessionSave')
-    --     print('Saving a new session')
-    -- else
-    --     vim.cmd(string.format('SessionSave %s', session))
-    --     print('Saving the current session: ' .. session)
-    -- end
-end)
 
 vim.keymap.set('n', '<leader>wc', ':SessionSave ') -- Custom session names
 vim.keymap.set('n', '<leader>wa', '<cmd>SessionToggleAutoSave<CR>')

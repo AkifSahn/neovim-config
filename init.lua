@@ -7,3 +7,7 @@ vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
         vim.bo.filetype = "c"
     end,
 })
+
+-- Enable tag-based navigation
+vim.o.tags = './tags;,tags'
+

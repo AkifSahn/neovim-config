@@ -1,6 +1,5 @@
 local lsp_zero = require('lsp-zero')
 
-
 -- Configure keymaps
 lsp_zero.on_attach(function(client, bufnr)
     local opts = { buffer = bufnr, remap = false }
@@ -17,56 +16,86 @@ lsp_zero.on_attach(function(client, bufnr)
     vim.keymap.set({ "i", "n" }, "<C-s>", function() vim.lsp.buf.signature_help() end, opts)
 end)
 
--- disable diagnostic signs
+-- Disable diagnostic signs
 vim.diagnostic.config({
     signs = false
 })
 
-
--- don't add this function in the `on_attach` callback.
--- `format_on_save` should run only once, before the language servers are active.
-
--- don't format on save, instead format on keymap
---lsp_zero.format_mapping("<leader>fo", {
+-- Configure format on save
 lsp_zero.format_on_save({
     format_opts = {
         async = false,
         timeout_ms = 10000,
     },
     servers = {
-        ['ts_ls'] = { 'javascript', 'typescript' },
-        ['jedi_language_server'] = { 'python' },
+        ['ts_ls'] = { 'javascript', 'typescript', 'vue' },
+        ['eslint'] = { 'javascript', 'typescript', 'vue' },
+        ['pyright'] = { 'python' },
         ['gopls'] = { 'go' },
-        -- ['lua_ls'] = { 'lua' },
-        ["rust_analyzer"] = { 'rust' },
-        -- ["clangd"] = { 'c', 'cpp' },
+        ['rust_analyzer'] = { 'rust' },
     }
-
 })
-
 
 -- Mason setup
 require('mason').setup({})
 require('mason-lspconfig').setup({
-    -- Replace the language servers listed here
-    -- with the ones you want to install
-    ensure_installed = { "gopls", "eslint", "ts_ls", "lua_ls", "jedi_language_server", "rust_analyzer", "clangd", "bashls" },
+    ensure_installed = { "gopls", "eslint", "ts_ls", "lua_ls", "pyright", "rust_analyzer", "clangd", "bashls" },
     handlers = {
+        -- Default handler for most servers
         function(server_name)
-            require('lspconfig')[server_name].setup({})
+            if server_name ~= "jedi_language_server" and server_name ~= "basedpyright" then
+                require('lspconfig')[server_name].setup({})
+            end
         end,
 
-        clangd = function ()
+        -- Custom handler for clangd
+        clangd = function()
             require('lspconfig').clangd.setup({
-                cmd = {"clangd", "--background-index", "--clang-tidy", "--completion-style=detailed"},-- "--header-insertion=never"},
-                filetypes = {"c", "cpp"},
+                cmd = { "clangd", "--background-index", "--clang-tidy", "--completion-style=detailed" },
+                filetypes = { "c" },
+                init_options = {
+                    clangdFileStatus = true,
+                },
                 capabilities = require('cmp_nvim_lsp').default_capabilities(),
-                on_attach = function (client, bufnr)
+                on_attach = function(client, bufnr)
                     local opts = { buffer = bufnr, remap = false }
                     vim.keymap.set("n", "<leader>hs", function() vim.lsp.buf.document_highlight() end, opts)
                 end
             })
         end,
+
+        -- Custom handler for pyright with fixed syntax
+        pyright = function()
+            require('lspconfig').pyright.setup({
+                filetypes = { "python" },
+                settings = {
+                    python = {
+                        analysis = {
+                            autoSearchPaths = true,
+                            useLibraryCodeForTypes = true,
+                            diagnosticMode = "openFilesOnly",
+                            typeCheckingMode = "basic",
+                            reportMissingImports = "warning",
+                            reportUndefinedVariable = "warning",
+                            reportUnusedVariable = "none",
+                            reportGeneralTypeIssues = "warning",
+                            reportOptionalMemberAccess = "warning",
+                            reportArgumentType = "none", -- This should now work
+                            django = true,
+                        },
+                    },
+                },
+            })
+        end,
+
+        -- Disable jedi_language_server
+        jedi_language_server = function()
+            -- Do nothing
+        end,
+
+        -- Disable basedpyright
+        basedpyright = function()
+            -- Do nothing
+        end,
     },
-}
-)
+})
