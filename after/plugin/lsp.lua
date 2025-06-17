@@ -28,8 +28,9 @@ lsp_zero.format_on_save({
         timeout_ms = 10000,
     },
     servers = {
-        ['ts_ls'] = { 'javascript', 'typescript', 'vue' },
+        ['ts_ls'] = { 'javascript', 'typescript' },
         ['eslint'] = { 'javascript', 'typescript', 'vue' },
+        ['volar'] = { 'vue' },
         ['pyright'] = { 'python' },
         ['gopls'] = { 'go' },
         ['rust_analyzer'] = { 'rust' },
@@ -39,11 +40,14 @@ lsp_zero.format_on_save({
 -- Mason setup
 require('mason').setup({})
 require('mason-lspconfig').setup({
-    ensure_installed = { "gopls", "eslint", "ts_ls", "lua_ls", "pyright", "rust_analyzer", "clangd", "bashls" },
+    ensure_installed = {
+        "gopls", "eslint", "ts_ls", "lua_ls", "pyright", "rust_analyzer",
+        "clangd", "bashls", "volar"
+    },
     handlers = {
         -- Default handler for most servers
         function(server_name)
-            if server_name ~= "jedi_language_server" and server_name ~= "basedpyright" then
+            if server_name ~= "jedi_language_server" and server_name ~= "basedpyright" and server_name ~= "volar" then
                 require('lspconfig')[server_name].setup({})
             end
         end,
@@ -64,7 +68,28 @@ require('mason-lspconfig').setup({
             })
         end,
 
-        -- Custom handler for pyright with fixed syntax
+        -- Custom handler for tsserver
+        ts_ls = function()
+            require('lspconfig').ts_ls.setup({
+                filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+                capabilities = require('cmp_nvim_lsp').default_capabilities(),
+            })
+        end,
+
+        -- Custom handler for volar (Vue 3)
+        volar = function()
+            require('lspconfig').volar.setup({
+                filetypes = { "vue" },
+                capabilities = require('cmp_nvim_lsp').default_capabilities(),
+                init_options = {
+                    typescript = {
+                        tsdk = vim.fn.stdpath("data") .. "/mason/packages/typescript-language-server/node_modules/typescript/lib"
+                    }
+                }
+            })
+        end,
+
+        -- Custom handler for pyright
         pyright = function()
             require('lspconfig').pyright.setup({
                 filetypes = { "python" },
@@ -80,7 +105,7 @@ require('mason-lspconfig').setup({
                             reportUnusedVariable = "none",
                             reportGeneralTypeIssues = "warning",
                             reportOptionalMemberAccess = "warning",
-                            reportArgumentType = "none", -- This should now work
+                            reportArgumentType = "none",
                             django = true,
                         },
                     },
@@ -99,3 +124,4 @@ require('mason-lspconfig').setup({
         end,
     },
 })
+
