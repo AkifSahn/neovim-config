@@ -12,10 +12,15 @@ return {
             "rafamadriz/friendly-snippets",
         },
         config = function()
-            -- Mason setup
-            require("mason").setup()
+            local cmp = require("cmp")
+            local cmp_lsp = require("cmp_nvim_lsp")
+            local capabilities = vim.tbl_deep_extend(
+                "force",
+                {},
+                vim.lsp.protocol.make_client_capabilities(),
+                cmp_lsp.default_capabilities())
 
-            -- Ensure servers are installed
+            require("mason").setup()
             require("mason-lspconfig").setup({
                 ensure_installed = {
                     "eslint",
@@ -29,20 +34,9 @@ return {
                 handlers = {
                     function(server_name)
                         local lspconfig = require("lspconfig")
-                        local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
                         lspconfig[server_name].setup({
-                            capabilities = capabilities,
-                            on_attach = function(_, bufnr)
-                                local map = vim.keymap.set
-                                local opts = { buffer = bufnr }
-                                map("n", "gd", vim.lsp.buf.definition, opts)
-                                map("n", "K", vim.lsp.buf.hover, opts)
-                                map("n", "<leader>rn", vim.lsp.buf.rename, opts)
-                                map("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-                                map("n", "[d", vim.diagnostic.goto_prev, opts)
-                                map("n", "]d", vim.diagnostic.goto_next, opts)
-                            end,
+                            capabilities = capabilities
                         })
                     end,
 
@@ -56,17 +50,6 @@ return {
                                 "--header-insertion=never",
                                 "--cross-file-rename=true",
                             },
-                            capabilities = require("cmp_nvim_lsp").default_capabilities(),
-                            on_attach = function(_, bufnr)
-                                local map = vim.keymap.set
-                                local opts = { buffer = bufnr }
-                                map("n", "gd", vim.lsp.buf.definition, opts)
-                                map("n", "K", vim.lsp.buf.hover, opts)
-                                map("n", "<leader>rn", vim.lsp.buf.rename, opts)
-                                map("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-                                map("n", "[d", vim.diagnostic.goto_prev, opts)
-                                map("n", "]d", vim.diagnostic.goto_next, opts)
-                            end,
                         })
                     end,
                 }
