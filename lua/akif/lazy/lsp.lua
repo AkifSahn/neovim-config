@@ -1,65 +1,94 @@
 return {
-    {
-        "neovim/nvim-lspconfig",
+    { "mason-org/mason.nvim",
+    cmd = "Mason",
+    opts = {},
+    },
+
+    { "mason-org/mason-lspconfig.nvim",
+        dependencies = { "mason-org/mason.nvim", "neovim/nvim-lspconfig" },
+        opts = {
+            ensure_installed = {
+                "eslint",
+                "gopls",
+                "rust_analyzer",
+                "lua_ls",
+                "clangd",
+                "bashls",
+            },
+        },
+    },
+
+    { "neovim/nvim-lspconfig",
         dependencies = {
-            "williamboman/mason.nvim",
-            "williamboman/mason-lspconfig.nvim",
-            "hrsh7th/nvim-cmp",
+            "mason-org/mason.nvim",
+            "mason-org/mason-lspconfig.nvim",
             "hrsh7th/cmp-nvim-lsp",
-            "L3MON4D3/LuaSnip",
-            "hrsh7th/cmp-buffer",
-            "saadparwaiz1/cmp_luasnip",
-            "rafamadriz/friendly-snippets",
         },
         config = function()
-            local cmp = require("cmp")
             local cmp_lsp = require("cmp_nvim_lsp")
+
             local capabilities = vim.tbl_deep_extend(
                 "force",
                 {},
                 vim.lsp.protocol.make_client_capabilities(),
-                cmp_lsp.default_capabilities())
+                cmp_lsp.default_capabilities()
+            )
 
-            require("mason").setup()
-            require("mason-lspconfig").setup({
-                ensure_installed = {
-                    "eslint",
-                    "gopls",
-                    "rust_analyzer",
-                    "lua_ls",
+            vim.lsp.config('*', {
+                capabilities = capabilities,
+                on_attach = function(client, bufnr)
+                    -- general on_attach logic (keymaps etc...)
+                end,
+            })
+
+            vim.lsp.config('clangd', {
+                cmd = {
                     "clangd",
-                    "bashls",
+                    "--background-index",
+                    "--clang-tidy",
+                    "--completion-style=detailed",
+                    "--header-insertion=never",
+                    "--cross-file-rename=true",
                 },
+            })
 
-                handlers = {
-                    function(server_name)
-                        local lspconfig = require("lspconfig")
+            vim.lsp.config('lua_ls', {
+                settings = {
+                    Lua = {
+                        diagnostics = {
+                            globals = { 'vim' },
+                        },
+                    },
+                },
+            })
 
-                        lspconfig[server_name].setup({
-                            capabilities = capabilities
-                        })
-                    end,
-
-                    clangd = function()
-                        require("lspconfig").clangd.setup({
-                            cmd = {
-                                "clangd",
-                                "--background-index",
-                                "--clang-tidy",
-                                "--completion-style=detailed",
-                                "--header-insertion=never",
-                                "--cross-file-rename=true",
+            vim.lsp.config('basedpyright', {
+                settings = {
+                    basedpyright = {
+                        analysis = {
+                            autoSearchPaths = true,
+                            diagnosticMode = "openFilesOnly",
+                            useLibraryCodeForTypes = true,
+                            typeCheckingMode = "strict",
+                            diagnosticSeverityOverrides = {
+                                reportAny = false,
+                                reportMissingTypeArgument = false,
+                                reportMissingTypeStubs = false,
+                                reportUnknownArgumentType = false,
+                                reportUnknownMemberType = false,
+                                reportUnknownParameterType = false,
+                                reportUnknownVariableType = false,
+                                reportUnusedCallResult = false,
+                                reportArgumentType = false,
+                                reportUnreachable = false,
                             },
-                        })
-                    end,
-                }
-
+                        },
+                    },
+                    python = {},
+                },
             })
 
-            -- Disable diagnostic signs
-            vim.diagnostic.config({
-                signs = false,
-            })
+            vim.diagnostic.config({ signs = false })
         end,
     },
 
