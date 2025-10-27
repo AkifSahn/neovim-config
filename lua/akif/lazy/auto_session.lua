@@ -1,11 +1,11 @@
 return {
     "rmagatti/auto-session",
     config = function()
-        vim.keymap.set('n', '<leader>wr', '<cmd>SessionSearch<CR>')
-        vim.keymap.set('n', '<leader>ws', '<cmd>SessionSave<CR>')
+        vim.keymap.set('n', '<leader>wr', '<cmd>AutoSession search<CR>')
+        vim.keymap.set('n', '<leader>ws', '<cmd>AutoSession save<CR>')
 
-        vim.keymap.set('n', '<leader>wc', ':SessionSave ') -- Custom session names
-        vim.keymap.set('n', '<leader>wa', '<cmd>SessionToggleAutoSave<CR>')
+        vim.keymap.set('n', '<leader>wc', ':AutoSession save ') -- Custom session names
+        vim.keymap.set('n', '<leader>wa', '<cmd>AutoSession toggle<CR>')
         vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 
         require('auto-session').setup {

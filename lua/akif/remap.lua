@@ -52,8 +52,10 @@ vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 -- format
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
--- rename
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+-- rename in file
+vim.keymap.set("n", "<leader>S", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+-- rename in line
+vim.keymap.set("n", "<leader>s", [[:s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 
 -- Man pages shortcut
 vim.keymap.set("n", "m", ":Man ")
